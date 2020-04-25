@@ -141,3 +141,46 @@ def test_transformed_response_correct_values():
     A_tilde = unfold._SVDunfold__transform_response_matrix(Q, r)
     assert np.array_equal(
         np.array([[0, 0, 2. / 5.], [2. / 4., 0, 0], [0, 1. / 2., 0]]), A_tilde)
+
+
+def test_inverse_covariance_correct_dimensions():
+    """Test if the inverse covariance matrix has the correct dimensions"""
+    x_ini = np.histogram(np.array([1, 2, 3, 4, 5]), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.eye(3)
+    A_tilde = np.zeros((3, 5))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
+    assert X_inv.shape == (5, 5)
+
+
+def test_inverse_covariance_correct_values_3x3():
+    """Test if the inverse covariance matrix is correct for A_tilde(3x3)"""
+    x_ini = np.histogram(np.array([1, 2, 2, 3, 3, 3]), bins=3)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 3))
+    cov = np.eye(3)
+    A_tilde = np.array([[1, 0, 1], [0, 2, 2], [3, 1, 0]])
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
+    assert np.array_equal(X_inv, np.array(
+        [[10., 3. / 2, 1. / 3.], [3. / 2., 5. / 4., 2. / 3.], [1. / 3., 2. / 3., 5. / 9.]]))
+
+
+def test_inverse_covariance_correct_values_3x5():
+    """Test if the inverse covariance matrix is correct for A_tilde(3x3)"""
+    x_ini = np.histogram(
+        np.array([1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.eye(3)
+    A_tilde = np.array([[1, 0, 1, 4, 9], [0, 2, 2, 0, 5], [3, 1, 0, 1, 1]])
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
+    x_inv_test = np.array([[10., 3. / 2., 1. / 3., 7. / 4., 12. / 5.],
+                           [3. / 2., 5. / 4., 2. / 3., 1. / 8., 11. / 10.],
+                           [1. / 3., 2. / 3., 5. / 9., 1. / 3., 19. / 15.],
+                           [7. / 4., 1. / 8., 1. / 3., 17. / 16., 37. / 20.],
+                           [12. / 5., 11. / 10., 19. / 15., 37. / 20, 107. / 25.]])
+    assert np.array_equal(X_inv, x_inv_test)

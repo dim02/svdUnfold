@@ -75,8 +75,16 @@ class SVDunfold:
                 transformed_response[i, j] = transformed_response[i, j] / r[i]
         return transformed_response
 
-    def __caclulate_inverse_covariance(self):
+    def __caclulate_inverse_covariance(self, A_tilde):
         """Return the inverse covariance of the transformed system"""
+        n_bins_x = len(self.__x_ini[0])
+        n_bins_b = len(self.__b_measured[0])
+        X_inv = np.zeros((n_bins_x, n_bins_x))
+        for j in range(n_bins_x):
+            for k in range(n_bins_x):
+                for i in range(n_bins_b):
+                    X_inv[j,k] += A_tilde[i,j]*A_tilde[i,k]/(self.__x_ini[0][j]*self.__x_ini[0][k])
+        return X_inv
 
     def __perform_svd_on_transformed_system(self):
         """Return the result of svd on the transformed system"""
