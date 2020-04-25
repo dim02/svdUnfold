@@ -3,9 +3,8 @@ A single class module that performs data unfolding using the singular value deco
 as described in https://arxiv.org/abs/hep-ph/9509307
 """
 
-import helpers
 import numpy as np
-
+import helpers
 
 class SVDunfold:
     """
@@ -24,8 +23,13 @@ class SVDunfold:
         self.__x_ini = x_ini
         self.__response_matrix = A
         self.__covariance_matrix = cov
+        self.__X_inv = None
+        self.__S = None
+        self.__d = None
         n_bins_b = len(self.__b_measured[0])
         n_bins_x = len(self.__x_ini[0])
+        self.__C = helpers.calc_second_deriv_matrix(n_bins_x, 0.001)
+        self.__C_inv = helpers.calc_inverse_second_deriv_matrix(self.__C)
         assert(self.__response_matrix.shape[0] == n_bins_b),\
             "Wrong dimensions: bins in b != rows in response matrix"
         assert(self.__response_matrix.shape[1] == n_bins_x),\
@@ -44,12 +48,21 @@ class SVDunfold:
 
     def get_abs_d(self):
         """Return a 1d array of the absolute value of the deconvolution coefficients d"""
+        self.__transform_system()
+        return np.log(np.abs(self.__d))
 
     def get_singular_values(self):
         """Return an array of the singular values of the rescaled and rotated problem"""
 
     def __transform_system(self):
         """Rescale and rotate the system of equations"""
+        n_bins_x = len(self.__x_ini[0])
+        Q, r, _ = self.__perform_svd_on_covariance()
+        b_transformed = self.__transform_b_measured(Q, r)
+        transformed_response = self.__transform_response_matrix(Q, r)
+        self.__X_inv = self.__caclulate_inverse_covariance(transformed_response)
+        U, self.__S, VT = self.__perform_svd_on_transformed_system(transformed_response, self.__C_inv)
+        self.__d = self.__calculate_expansion_coefficients(U, b_transformed)
 
     def __perform_svd_on_covariance(self):
         """Return the result of the svd on the covariance matrix"""
