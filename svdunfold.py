@@ -60,6 +60,8 @@ class SVDunfold:
 
     def __transform_b_measured(self):
         """Return the rotated and rescaled measured b"""
+        n_bins_b = len(self.__b_measured[0])
+        return np.zeros(n_bins_b)
 
     def __transform_response_matrix(self):
         """Return the rotated and rescaled response matrix"""

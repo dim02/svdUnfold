@@ -88,3 +88,14 @@ def test_svd_on_covariance_matrix():
     assert np.array_equal(Q, Q_test)
     assert np.array_equal(r, r_test)
     assert np.array_equal(QT, QT_test)
+
+
+def test_transformed_b_measured_dimension():
+    """Test if the dimensions of the transformed measured array are correct"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=4)
+    A = np.zeros((4, 5))
+    cov = np.zeros((4, 4))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    b_tilde = unfold._SVDunfold__transform_b_measured()
+    assert np.size(b_tilde) == 4
