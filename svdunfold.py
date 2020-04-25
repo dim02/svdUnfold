@@ -17,6 +17,11 @@ class SVDunfold:
         A: 2d numpy array with the response matrix (n_b x n_x)
         cov: 2d numpy array with the covariance matrix
         """
+        self.__b_measured = b
+        self.__response_matrix = A
+        n_bins_b = len(self.__b_measured[0])
+        assert(self.__response_matrix.shape[0] == n_bins_b),\
+            "Wrong dimensions: bins in b != rows in response matrix"
 
     def unfold(self, k):
         """Perform the unfolding with regularization parameter tau=s(k)^2"""
