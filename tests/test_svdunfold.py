@@ -96,6 +96,19 @@ def test_transformed_b_measured_dimension():
     b = np.histogram(np.zeros(10), bins=4)
     A = np.zeros((4, 5))
     cov = np.zeros((4, 4))
+    Q = np.zeros((4, 4))
+    r = np.ones(4)
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    b_tilde = unfold._SVDunfold__transform_b_measured()
+    b_tilde = unfold._SVDunfold__transform_b_measured(Q, r)
     assert np.size(b_tilde) == 4
+
+def test_transformed_measured_distribution():
+    x_ini = np.histogram(np.zeros(10), bins=3)
+    b = np.histogram([6, 7, 8, 9, 10], bins=3)
+    A = np.zeros((3, 3))
+    cov = cov = np.array([[4, 0, 0], [0, 25, 0], [0, 0, 16]])
+    Q = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
+    r = np.array([5., 4., 2.])
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    b_tilde = unfold._SVDunfold__transform_b_measured(Q, r)
+    assert np.array_equal(np.array([2. / 5., 2. / 4., 1. / 2.]), b_tilde)
