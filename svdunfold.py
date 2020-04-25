@@ -46,3 +46,24 @@ class SVDunfold:
 
     def get_singular_values(self):
         """Return an array of the singular values of the rescaled and rotated problem"""
+
+    def __transform_system(self):
+        """Rescale and rotate the system of equations"""
+
+    def __perform_svd_on_covariance(self):
+        """Return the result of the svd on the covariance matrix"""
+
+    def __transform_b_measured(self):
+        """Return the rotated and rescaled measured b"""
+
+    def __transform_response_matrix(self):
+        """Return the rotated and rescaled response matrix"""
+
+    def __caclulate_inverse_covariance(self):
+        """Return the inverse covariance of the transformed system"""
+
+    def __perform_svd_on_transformed_system(self):
+        """Return the result of svd on the transformed system"""
+
+    def __calculate_expansion_coefficients(self):
+        """Return the array of expansion coefficients d"""
