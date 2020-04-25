@@ -102,7 +102,9 @@ def test_transformed_b_measured_dimension():
     b_tilde = unfold._SVDunfold__transform_b_measured(Q, r)
     assert np.size(b_tilde) == 4
 
+
 def test_transformed_measured_distribution():
+    """Test if the transformed measured distribution is correct"""
     x_ini = np.histogram(np.zeros(10), bins=3)
     b = np.histogram([6, 7, 8, 9, 10], bins=3)
     A = np.zeros((3, 3))
@@ -112,3 +114,30 @@ def test_transformed_measured_distribution():
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     b_tilde = unfold._SVDunfold__transform_b_measured(Q, r)
     assert np.array_equal(np.array([2. / 5., 2. / 4., 1. / 2.]), b_tilde)
+
+
+def test_transformed_response_correct_dimensions():
+    """Test if the dimensions of the transposed response matrix are correct"""
+    x_ini = np.histogram(np.zeros(10), bins=3)
+    b = np.histogram(np.zeros(10), bins=7)
+    A = np.zeros((7, 3))
+    cov = np.eye(7)
+    Q = np.zeros((7, 7))
+    r = np.ones(7)
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    A_tilde = unfold._SVDunfold__transform_response_matrix(Q, r)
+    assert A_tilde.shape == (7, 3)
+
+
+def test_transformed_response_correct_values():
+    """Test if the transformed response matrix is correct"""
+    x_ini = np.histogram(np.zeros(10), bins=3)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.histogram2d([1, 2, 3, 4, 5], [6, 7, 8, 9, 10], bins=3)[0]
+    cov = np.array([[4, 0, 0], [0, 25, 0], [0, 0, 16]])
+    Q = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
+    r = np.array([5., 4., 2.])
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    A_tilde = unfold._SVDunfold__transform_response_matrix(Q, r)
+    assert np.array_equal(
+        np.array([[0, 0, 2. / 5.], [2. / 4., 0, 0], [0, 1. / 2., 0]]), A_tilde)

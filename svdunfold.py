@@ -65,8 +65,15 @@ class SVDunfold:
             b_transformed[i] = b_transformed[i] / r[i]
         return b_transformed
 
-    def __transform_response_matrix(self):
+    def __transform_response_matrix(self, Q, r):
         """Return the rotated and rescaled response matrix"""
+        n_bins_x = len(self.__x_ini[0])
+        n_bins_b = len(self.__b_measured[0])
+        transformed_response = Q@self.__response_matrix
+        for i in range(n_bins_b):
+            for j in range(n_bins_x):
+                transformed_response[i, j] = transformed_response[i, j] / r[i]
+        return transformed_response
 
     def __caclulate_inverse_covariance(self):
         """Return the inverse covariance of the transformed system"""
