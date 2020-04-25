@@ -93,5 +93,7 @@ class SVDunfold:
         U, S, VT = np.linalg.svd(A_tilde_x_C_inv)
         return U, S, VT
 
-    def __calculate_expansion_coefficients(self):
+    def __calculate_expansion_coefficients(self, U, b_transformed):
         """Return the array of expansion coefficients d"""
+        d = U.T@b_transformed
+        return d

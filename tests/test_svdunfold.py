@@ -212,8 +212,33 @@ def test_svd_on_transformed_system():
                         [-0.32429862, 0.54803796, 0.12645634, -0.68401197, 0.33259768]])
     U, S, VT = unfold._SVDunfold__perform_svd_on_transformed_system(
         A_tilde, C_inv)
-    print(U)
-    print(U_test)
     assert np.allclose(U, U_test)
     assert np.allclose(S, S_test)
     assert np.allclose(VT, VT_test)
+
+
+def test_expansion_coefficients_dimension():
+    """Test if vector of expansion coefficients has correct dimensions"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.array([1, 2, 2, 3, 3, 3]), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.eye(3)
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    U = np.ones((3, 5))
+    b_transformed = np.ones(3)
+    d = unfold._SVDunfold__calculate_expansion_coefficients(U, b_transformed)
+    assert d.shape == (5,)
+
+
+def test_expansion_coefficients_correct():
+    """Test if vector of expansion coefficients is calculated correctly"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.array([1, 2, 2, 3, 3, 3]), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.eye(3)
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    U = np.array([[1, 4, 8, 3, 6], [9, 5, 3, 0, 3], [3, 5, 4, 4, 8]])
+    b_transformed = np.array([4, 5, 6])
+    d = unfold._SVDunfold__calculate_expansion_coefficients(U, b_transformed)
+    d_test = np.array([67, 71, 71, 36, 87])
+    assert np.allclose(d, d_test)
