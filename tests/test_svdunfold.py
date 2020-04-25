@@ -195,8 +195,6 @@ def test_svd_on_transformed_system():
     A_tilde = np.array([[1, 0, 6, 3, 8],
                         [9, 3, 6, 4, 0],
                         [1, 5, 3, 7, 5]])
-    C = helpers.calc_second_deriv_matrix(5, 0.01)
-    C_inv = helpers.calc_inverse_second_deriv_matrix(C)
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     U_test = np.array([[-0.50933966, 0.58444234, -0.63166467],
                        [-0.62247852, -0.75704201, -0.1985142],
@@ -211,7 +209,7 @@ def test_svd_on_transformed_system():
                          0.04126636, -0.41774758],
                         [-0.32429862, 0.54803796, 0.12645634, -0.68401197, 0.33259768]])
     U, S, VT = unfold._SVDunfold__perform_svd_on_transformed_system(
-        A_tilde, C_inv)
+        A_tilde)
     assert np.allclose(U, U_test)
     assert np.allclose(S, S_test)
     assert np.allclose(VT, VT_test)

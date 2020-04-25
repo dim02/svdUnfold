@@ -6,6 +6,7 @@ as described in https://arxiv.org/abs/hep-ph/9509307
 import numpy as np
 import helpers
 
+
 class SVDunfold:
     """
     A class to perform a singular value decomposition data unfolding
@@ -28,7 +29,7 @@ class SVDunfold:
         self.__d = None
         n_bins_b = len(self.__b_measured[0])
         n_bins_x = len(self.__x_ini[0])
-        self.__C = helpers.calc_second_deriv_matrix(n_bins_x, 0.001)
+        self.__C = helpers.calc_second_deriv_matrix(n_bins_x, 0.01)
         self.__C_inv = helpers.calc_inverse_second_deriv_matrix(self.__C)
         assert(self.__response_matrix.shape[0] == n_bins_b),\
             "Wrong dimensions: bins in b != rows in response matrix"
@@ -60,8 +61,10 @@ class SVDunfold:
         Q, r, _ = self.__perform_svd_on_covariance()
         b_transformed = self.__transform_b_measured(Q, r)
         transformed_response = self.__transform_response_matrix(Q, r)
-        self.__X_inv = self.__caclulate_inverse_covariance(transformed_response)
-        U, self.__S, VT = self.__perform_svd_on_transformed_system(transformed_response, self.__C_inv)
+        self.__X_inv = self.__caclulate_inverse_covariance(
+            transformed_response)
+        U, self.__S, VT = self.__perform_svd_on_transformed_system(
+            transformed_response)
         self.__d = self.__calculate_expansion_coefficients(U, b_transformed)
 
     def __perform_svd_on_covariance(self):
@@ -100,9 +103,9 @@ class SVDunfold:
                         (self.__x_ini[0][j] * self.__x_ini[0][k])
         return X_inv
 
-    def __perform_svd_on_transformed_system(self, A_tilde, C_inv):
+    def __perform_svd_on_transformed_system(self, A_tilde):
         """Return the result of svd on the transformed system"""
-        A_tilde_x_C_inv = A_tilde@C_inv
+        A_tilde_x_C_inv = A_tilde@self.__C_inv
         U, S, VT = np.linalg.svd(A_tilde_x_C_inv)
         return U, S, VT
 
