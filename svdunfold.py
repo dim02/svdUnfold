@@ -18,10 +18,14 @@ class SVDunfold:
         cov: 2d numpy array with the covariance matrix
         """
         self.__b_measured = b
+        self.__x_ini = x_ini
         self.__response_matrix = A
         n_bins_b = len(self.__b_measured[0])
+        n_bins_x = len(self.__x_ini[0])
         assert(self.__response_matrix.shape[0] == n_bins_b),\
             "Wrong dimensions: bins in b != rows in response matrix"
+        assert(self.__response_matrix.shape[1] == n_bins_x),\
+            "Wrong dimensions: bins in x_ini != columns in response matrix"
 
     def unfold(self, k):
         """Perform the unfolding with regularization parameter tau=s(k)^2"""
