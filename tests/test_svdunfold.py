@@ -77,9 +77,9 @@ def test_contruct_c_matrix_7d_with_xi():
 def test_svd_on_covariance_matrix():
     """Test svd on covariance matrix"""
     x_ini = np.histogram(np.zeros(10), bins=5)
-    b = np.histogram(np.zeros(10), bins=5)
-    A = np.zeros((5, 5))
-    cov = cov = np.array([[4, 0, 0], [0, 25, 0], [0, 0, 16]])
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.array([[4, 0, 0], [0, 25, 0], [0, 0, 16]])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     Q_test = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
     r_test = np.array([5., 4., 2.])
@@ -178,9 +178,42 @@ def test_inverse_covariance_correct_values_3x5():
     A_tilde = np.array([[1, 0, 1, 4, 9], [0, 2, 2, 0, 5], [3, 1, 0, 1, 1]])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
-    x_inv_test = np.array([[10., 3. / 2., 1. / 3., 7. / 4., 12. / 5.],
+    X_inv_test = np.array([[10., 3. / 2., 1. / 3., 7. / 4., 12. / 5.],
                            [3. / 2., 5. / 4., 2. / 3., 1. / 8., 11. / 10.],
                            [1. / 3., 2. / 3., 5. / 9., 1. / 3., 19. / 15.],
                            [7. / 4., 1. / 8., 1. / 3., 17. / 16., 37. / 20.],
                            [12. / 5., 11. / 10., 19. / 15., 37. / 20, 107. / 25.]])
-    assert np.array_equal(X_inv, x_inv_test)
+    assert np.array_equal(X_inv, X_inv_test)
+
+
+def test_svd_on_transformed_system():
+    """Test svd on transformed system"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.eye(3)
+    A_tilde = np.array([[1, 0, 6, 3, 8],
+                        [9, 3, 6, 4, 0],
+                        [1, 5, 3, 7, 5]])
+    C = helpers.calc_second_deriv_matrix(5, 0.01)
+    C_inv = helpers.calc_inverse_second_deriv_matrix(C)
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    U_test = np.array([[-0.50933966, 0.58444234, -0.63166467],
+                       [-0.62247852, -0.75704201, -0.1985142],
+                       [-0.5942168, 0.29208653, 0.74939432]])
+    S_test = np.array([1580.51138731, 21.14648575, 1.60524919])
+    VT_test = np.array([[-0.44869132, -0.44844725, -0.44678007, -0.44606964, -0.44607244],
+                        [0.61939546, 0.33245276, 0.00384851,
+                         -0.33232921, -0.62878209],
+                        [0.42855687, -0.61537921, 0.31004087,
+                         -0.47011051, 0.34715732],
+                        [-0.35523906, -0.09660769, 0.82961209,
+                         0.04126636, -0.41774758],
+                        [-0.32429862, 0.54803796, 0.12645634, -0.68401197, 0.33259768]])
+    U, S, VT = unfold._SVDunfold__perform_svd_on_transformed_system(
+        A_tilde, C_inv)
+    print(U)
+    print(U_test)
+    assert np.allclose(U, U_test)
+    assert np.allclose(S, S_test)
+    assert np.allclose(VT, VT_test)

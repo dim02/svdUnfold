@@ -83,11 +83,15 @@ class SVDunfold:
         for j in range(n_bins_x):
             for k in range(n_bins_x):
                 for i in range(n_bins_b):
-                    X_inv[j,k] += A_tilde[i,j]*A_tilde[i,k]/(self.__x_ini[0][j]*self.__x_ini[0][k])
+                    X_inv[j, k] += A_tilde[i, j] * A_tilde[i, k] / \
+                        (self.__x_ini[0][j] * self.__x_ini[0][k])
         return X_inv
 
-    def __perform_svd_on_transformed_system(self):
+    def __perform_svd_on_transformed_system(self, A_tilde, C_inv):
         """Return the result of svd on the transformed system"""
+        A_tilde_x_C_inv = A_tilde@C_inv
+        U, S, VT = np.linalg.svd(A_tilde_x_C_inv)
+        return U, S, VT
 
     def __calculate_expansion_coefficients(self):
         """Return the array of expansion coefficients d"""
