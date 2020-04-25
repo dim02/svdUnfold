@@ -3,6 +3,8 @@ A single class module that performs data unfolding using the singular value deco
 as described in https://arxiv.org/abs/hep-ph/9509307
 """
 
+import helpers
+
 
 class SVDunfold:
     """
@@ -20,12 +22,15 @@ class SVDunfold:
         self.__b_measured = b
         self.__x_ini = x_ini
         self.__response_matrix = A
+        self.__covariance_matrix = cov
         n_bins_b = len(self.__b_measured[0])
         n_bins_x = len(self.__x_ini[0])
         assert(self.__response_matrix.shape[0] == n_bins_b),\
             "Wrong dimensions: bins in b != rows in response matrix"
         assert(self.__response_matrix.shape[1] == n_bins_x),\
             "Wrong dimensions: bins in x_ini != columns in response matrix"
+        assert helpers.check_symmetric(self.__covariance_matrix), \
+            "Covariance matrix is not symmetric"
 
     def unfold(self, k):
         """Perform the unfolding with regularization parameter tau=s(k)^2"""
