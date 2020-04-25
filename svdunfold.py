@@ -4,6 +4,7 @@ as described in https://arxiv.org/abs/hep-ph/9509307
 """
 
 import helpers
+import numpy as np
 
 
 class SVDunfold:
@@ -52,6 +53,10 @@ class SVDunfold:
 
     def __perform_svd_on_covariance(self):
         """Return the result of the svd on the covariance matrix"""
+        Q, R, QT = np.linalg.svd(
+            self.__covariance_matrix, full_matrices=False)
+        r = np.sqrt(R)
+        return Q, r, QT
 
     def __transform_b_measured(self):
         """Return the rotated and rescaled measured b"""

@@ -72,3 +72,19 @@ def test_contruct_c_matrix_7d_with_xi():
                          [0, 0, 0, 0, 0, 1, -0.9]])
     assert np.array_equal(
         c_matrix, helpers.calc_second_deriv_matrix(7, 0.1))
+
+
+def test_svd_on_covariance_matrix():
+    """Test svd on covariance matrix"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=5)
+    A = np.zeros((5, 5))
+    cov = cov = np.array([[4, 0, 0], [0, 25, 0], [0, 0, 16]])
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    Q_test = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
+    r_test = np.array([5., 4., 2.])
+    QT_test = np.array([[0., 1., 0.], [0., 0., 1.], [1., 0., 0.]])
+    Q, r, QT = unfold._SVDunfold__perform_svd_on_covariance()
+    assert np.array_equal(Q, Q_test)
+    assert np.array_equal(r, r_test)
+    assert np.array_equal(QT, QT_test)
