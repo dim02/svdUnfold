@@ -19,3 +19,7 @@ def calc_second_deriv_matrix(n, xi):
     c_matrix[0, 0] = -1 + xi
     c_matrix[n - 1, n - 1] = -1 + xi
     return c_matrix
+
+def calc_inverse_second_deriv_matrix(c_matrix):
+    """Return the inverse of the second derivative matrix c_matrix"""
+    return np.linalg.inv(c_matrix)
