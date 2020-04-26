@@ -46,9 +46,11 @@ class SVDunfold:
 
     def get_unfolded_distribution(self):
         """Return the unfolded distribution as a 1d array"""
+        return self.__x_unfolded
 
     def get_unfolded_cov_matrix(self):
         """Return the unfolded covariance matrix as a 2d array"""
+        return self.__X_unfolded_covariance
 
     def get_abs_d(self):
         """Return a 1d array of the absolute value of the deconvolution coefficients d"""
