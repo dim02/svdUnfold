@@ -287,19 +287,21 @@ def test_transform_system_3x5():
                       [0., 0., 0., 0.33333333, 0.66666667]])
     assert np.allclose(unfold._SVDunfold__X_inv, X_inv)
 
+
 def test_regularized_expansion_coefficients():
     """Test if regularized expansion coefficients are calculated correctly"""
     x_ini = np.histogram(np.zeros(10), bins=5)
     b = np.histogram(np.zeros(10), bins=3)
-    A = np.ones((3,5))
+    A = np.ones((3, 5))
     cov = np.eye(3)
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    unfold._SVDunfold__d = np.array([5,4,1,0.1,1])
-    unfold._SVDunfold__S = np.array([10,3,2,1,0.01])
+    unfold._SVDunfold__d = np.array([5, 4, 1, 0.1, 1])
+    unfold._SVDunfold__S = np.array([10, 3, 2, 1, 0.01])
     d_reg = np.array([4.80769231, 2.76923077, 0.5, 0.02, 2.49993750e-05])
     tau = 4
     d_reg_test = unfold._SVDunfold__calculate_regularized_d(tau)
     assert np.allclose(d_reg, d_reg_test)
+
 
 def test_exception_when_k_out_of_bounds():
     """Test if  exception is thrown when critical value k is out of bounds"""
@@ -310,3 +312,24 @@ def test_exception_when_k_out_of_bounds():
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     with pytest.raises(AssertionError, match=r".*out of bounds.*"):
         unfold.unfold(5)
+
+
+def test_transformed_system_solution():
+    """Test the calculation of the stransformed system solution"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.zeros((3, 3))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    V = np.array([[-0.44869132, 0.61939546, 0.42855687, -0.35523906, -0.32429862],
+                  [-0.44844725, 0.33245276, -0.61537921, -0.09660769, 0.54803796],
+                  [-0.44678007, 0.00384851, 0.31004087, 0.82961209, 0.12645634],
+                  [-0.44606964, -0.33232921, -0.47011051, 0.04126636, -0.68401197],
+                  [-0.44607244, -0.62878209, 0.34715732, -0.41774758, 0.33259768]])
+    d = np.array([5, 4, 1, 0.1, 1])
+    unfold._SVDunfold__S = np.array([10, 3, 2, 1, 0.01])
+    tau = 4
+    w = unfold._SVDunfold__calculate_transformed_system_solution(tau, d, V)
+    w_test = np.array([-23.13863676, -22.45199401,
+                       -21.60395838, -20.65671022, -20.14252922])
+    assert np.allclose(w, w_test)
