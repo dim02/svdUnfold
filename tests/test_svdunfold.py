@@ -333,3 +333,26 @@ def test_transformed_system_solution():
     w_test = np.array([-23.13863676, -22.45199401,
                        -21.60395838, -20.65671022, -20.14252922])
     assert np.allclose(w, w_test)
+
+
+def test_transformed_system_covariance():
+    """Test the calculation of the transformed system covariance"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.zeros((3, 3))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    V = np.array([[-0.44869132, 0.61939546, 0.42855687, -0.35523906, -0.32429862],
+                  [-0.44844725, 0.33245276, -0.61537921, -0.09660769, 0.54803796],
+                  [-0.44678007, 0.00384851, 0.31004087, 0.82961209, 0.12645634],
+                  [-0.44606964, -0.33232921, -0.47011051, 0.04126636, -0.68401197],
+                  [-0.44607244, -0.62878209, 0.34715732, -0.41774758, 0.33259768]])
+    unfold._SVDunfold__S = np.array([10, 3, 2, 1, 0.01])
+    tau = 4
+    W_cov = unfold._SVDunfold__calculate_transformed_system_covariance(tau, V)
+    W_cov_t = np.array([[18.65430, 18.58575, 18.49273, 18.40675, 18.35836],
+                        [18.58575, 18.55553, 18.49723, 18.44252, 18.40052],
+                        [18.49273, 18.49723, 18.50056, 18.48892, 18.47695],
+                        [18.40675, 18.44252, 18.48892, 18.53564, 18.56115],
+                        [18.35836, 18.40052, 18.47695, 18.56115, 18.62346]])
+    assert np.allclose(W_cov, W_cov_t)

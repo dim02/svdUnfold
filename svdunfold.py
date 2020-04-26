@@ -130,6 +130,13 @@ class SVDunfold:
 
     def __calculate_transformed_system_covariance(self, tau, V):
         """Return the covariance matrix of the rotated system W(tau)"""
+        n_bins_x = len(self.__x_ini[0])
+        Z = np.zeros((n_bins_x, n_bins_x))
+        z_diag = self.__S**2 / (self.__S**2 + tau)**2
+        for i in range(n_bins_x):
+            Z[i, i] = z_diag[i]
+        W_covariance = self.__C_inv@V@Z@V.T@self.__C_inv
+        return W_covariance
 
     def __calculate_unfolded_distribution(self, w_solution):
         """Calculate the unfolded distribution x(tau)"""
