@@ -356,3 +356,17 @@ def test_transformed_system_covariance():
                         [18.40675, 18.44252, 18.48892, 18.53564, 18.56115],
                         [18.35836, 18.40052, 18.47695, 18.56115, 18.62346]])
     assert np.allclose(W_cov, W_cov_t)
+
+
+def test_unfolded_distribution():
+    """Test calculation of unfolded distribution x"""
+    x_ini = np.histogram(
+        np.array([1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.zeros((3, 3))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    w_solution = np.array([2, 1, 5, 6, 3])
+    x = unfold._SVDunfold__calculate_unfolded_distribution(w_solution)
+    x_test = np.array([2, 2, 15, 24, 15])
+    assert np.allclose(x, x_test)
