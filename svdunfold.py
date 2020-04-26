@@ -113,3 +113,18 @@ class SVDunfold:
         """Return the array of expansion coefficients d"""
         d = U.T@b_transformed
         return d
+
+    def __calculate_regularized_d(self, tau):
+        """Calculate regularized expansion coefficients with tau=s(k)^2"""
+
+    def __calculate_transformed_system_solution(self, tau, d_reg, V):
+        """Return the solution of the rotated system w(tau)"""
+
+    def __calculate_transformed_system_covariance(self, tau, V):
+        """Return the covariance matrix of the rotated system W(tau)"""
+
+    def __calculate_unfolded_distribution(self, w_solution):
+        """Calculate the unfolded distribution x(tau)"""
+
+    def __calculate_unfolded_distribution_covariance(self, W_covariance):
+        """Calculate the covariance matrix X(tau) of the unfolded distribution"""
