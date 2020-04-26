@@ -240,3 +240,27 @@ def test_expansion_coefficients_correct():
     d = unfold._SVDunfold__calculate_expansion_coefficients(U, b_transformed)
     d_test = np.array([67, 71, 71, 36, 87])
     assert np.allclose(d, d_test)
+
+
+def test_transform_system_3x5():
+    """Test transform system proceedure with 3-bin b and 5-bin x_ini and
+    second inverse derivative xi=0.01
+    """
+    x_ini = np.histogram([1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5], bins=5)
+    b = np.histogram([1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3], bins=3)
+    A = np.array([[1, 2, 0, 0, 0], [0, 0, 3, 2, 0], [0, 0, 0, 2, 5]])
+    cov = np.array([[1.5, 0., 0.], [0., 1.5, 0.], [0., 0., 1.5]])
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    unfold._SVDunfold__transform_system()
+    S = np.array([332.72483635, 6.42101093, 1.62637087])
+    X_inv = np.array([[0.66666667, 0.66666667, 0., 0., 0.],
+                      [0.66666667, 0.66666667, 0., 0., 0.],
+                      [0., 0., 0.66666667, 0.33333333, 0.],
+                      [0., 0., 0.33333333, 0.33333333, 0.33333333],
+                      [0., 0., 0., 0.33333333, 0.66666667]])
+    d = np.array([-7.0796561, 1.42501533, -1.78357341])
+    print(X_inv)
+    print(unfold._SVDunfold__X_inv)
+    assert np.allclose(unfold._SVDunfold__X_inv, X_inv)
+    assert np.allclose(unfold._SVDunfold__S, S)
+    assert np.allclose(unfold._SVDunfold__d, d)
