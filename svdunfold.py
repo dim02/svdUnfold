@@ -145,3 +145,6 @@ class SVDunfold:
 
     def __calculate_unfolded_distribution_covariance(self, W_covariance):
         """Calculate the covariance matrix X(tau) of the unfolded distribution"""
+        self.__X_unfolded_covariance = W_covariance * \
+            (np.outer(self.__x_ini[0], self.__x_ini[0]))
+        return self.__X_unfolded_covariance

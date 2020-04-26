@@ -370,3 +370,26 @@ def test_unfolded_distribution():
     x = unfold._SVDunfold__calculate_unfolded_distribution(w_solution)
     x_test = np.array([2, 2, 15, 24, 15])
     assert np.allclose(x, x_test)
+
+
+def test_unfolded_covariance():
+    """Test calculation of unfolded covariance X_cov_unfolded"""
+    x_ini = np.histogram(
+        np.array([1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.zeros((3, 3))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    W_covar = np.array([[6, 5, 4, 4, 3],
+                        [5, 5, 4, 4, 4],
+                        [9, 3, 6, 2, 5],
+                        [5, 2, 2, 4, 5],
+                        [6, 2, 5, 5, 6]])
+    X_cov = unfold._SVDunfold__calculate_unfolded_distribution_covariance(
+        W_covar)
+    X_cov_test = np.array([[6, 10, 12, 16, 15],
+                           [10, 20, 24, 32, 40],
+                           [27, 18, 54, 24, 75],
+                           [20, 16, 24, 64, 100],
+                           [30, 20, 75, 100, 150]])
+    assert np.allclose(X_cov, X_cov_test)
