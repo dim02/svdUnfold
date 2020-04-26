@@ -49,13 +49,13 @@ class SVDunfold:
 
     def get_abs_d(self):
         """Return a 1d array of the absolute value of the deconvolution coefficients d"""
-        self.__transform_system()
         return np.log(np.abs(self.__d))
 
     def get_singular_values(self):
         """Return an array of the singular values of the rescaled and rotated problem"""
+        return self.__S
 
-    def __transform_system(self):
+    def transform_system(self):
         """Rescale and rotate the system of equations"""
         n_bins_x = len(self.__x_ini[0])
         Q, r, _ = self.__perform_svd_on_covariance()

@@ -251,7 +251,7 @@ def test_transform_system_3x5():
     A = np.array([[1, 2, 0, 0, 0], [0, 0, 3, 2, 0], [0, 0, 0, 2, 5]])
     cov = np.array([[1.5, 0., 0.], [0., 1.5, 0.], [0., 0., 1.5]])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    unfold._SVDunfold__transform_system()
+    unfold.transform_system()
     S = np.array([332.72483635, 6.42101093, 1.62637087])
     X_inv = np.array([[0.66666667, 0.66666667, 0., 0., 0.],
                       [0.66666667, 0.66666667, 0., 0., 0.],
