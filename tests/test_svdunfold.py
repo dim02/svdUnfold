@@ -286,3 +286,17 @@ def test_transform_system_3x5():
                       [0., 0., 0.33333333, 0.33333333, 0.33333333],
                       [0., 0., 0., 0.33333333, 0.66666667]])
     assert np.allclose(unfold._SVDunfold__X_inv, X_inv)
+
+def test_regularized_expansion_coefficients():
+    """Test if regularized expansion coefficients are calculated correctly"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.ones((3,5))
+    cov = np.eye(3)
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    unfold._SVDunfold__d = np.array([5,4,1,0.1,1])
+    unfold._SVDunfold__S = np.array([10,3,2,1,0.01])
+    d_reg = np.array([4.80769231, 2.76923077, 0.5, 0.02, 2.49993750e-05])
+    tau = 4
+    d_reg_test = unfold._SVDunfold__calculate_regularized_d(tau)
+    assert np.allclose(d_reg, d_reg_test)

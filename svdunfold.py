@@ -115,7 +115,9 @@ class SVDunfold:
         return d
 
     def __calculate_regularized_d(self, tau):
-        """Calculate regularized expansion coefficients with tau=s(k)^2"""
+        """Calculate regularized expansion coefficients d_reg with tau=s(k)^2"""
+        d_reg = self.__d*self.__S**2/(self.__S**2 + tau)
+        return d_reg
 
     def __calculate_transformed_system_solution(self, tau, d_reg, V):
         """Return the solution of the rotated system w(tau)"""
