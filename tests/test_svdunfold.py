@@ -300,3 +300,13 @@ def test_regularized_expansion_coefficients():
     tau = 4
     d_reg_test = unfold._SVDunfold__calculate_regularized_d(tau)
     assert np.allclose(d_reg, d_reg_test)
+
+def test_exception_when_k_out_of_bounds():
+    """Test if  exception is thrown when critical value k is out of bounds"""
+    x_ini = np.histogram(np.zeros(10), bins=5)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 5))
+    cov = np.zeros((3, 3))
+    unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+    with pytest.raises(AssertionError, match=r".*out of bounds.*"):
+        unfold.unfold(5)

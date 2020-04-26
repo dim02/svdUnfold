@@ -40,6 +40,9 @@ class SVDunfold:
 
     def unfold(self, k):
         """Perform the unfolding with regularization parameter tau=s(k)^2"""
+        n_bins_x = len(self.__x_ini[0])
+        assert(k >= 0 and k < n_bins_x),\
+            "Critical value k is out of bounds"
 
     def get_unfolded_distribution(self):
         """Return the unfolded distribution as a 1d array"""
