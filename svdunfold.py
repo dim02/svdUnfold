@@ -43,6 +43,13 @@ class SVDunfold:
         n_bins_x = len(self.__x_ini[0])
         assert(k >= 0 and k < n_bins_x),\
             "Critical value k is out of bounds"
+        tau = self.__S[k]**2
+        d_reg = self.__calculate_regularized_d(tau)
+        V = self.__VT.T
+        w_solution = self.__calculate_transformed_system_solution(tau, d_reg, V)
+        W_covariance = self.__calculate_transformed_system_covariance(tau, V)
+        self.__x_unfolded = self.__calculate_unfolded_distribution(w_solution)
+        self.__X_unfolded_covariance = self.__calculate_unfolded_distribution_covariance(W_covariance)
 
     def get_unfolded_distribution(self):
         """Return the unfolded distribution as a 1d array"""
@@ -68,7 +75,7 @@ class SVDunfold:
         transformed_response = self.__transform_response_matrix(Q, r)
         self.__X_inv = self.__caclulate_inverse_covariance(
             transformed_response)
-        U, self.__S, VT = self.__perform_svd_on_transformed_system(
+        U, self.__S, self.__VT = self.__perform_svd_on_transformed_system(
             transformed_response)
         self.__d = self.__calculate_expansion_coefficients(U, b_transformed)
 
