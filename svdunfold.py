@@ -51,7 +51,6 @@ class SVDunfold:
         self.__x_unfolded = self.__calculate_unfolded_distribution(w_solution)
         self.__X_unfolded_covariance = self.__calculate_unfolded_distribution_covariance(W_covariance)
 
-
     def get_unfolded_distribution(self):
         """Return the unfolded distribution as a 1d array"""
         return self.__x_unfolded
@@ -71,18 +70,13 @@ class SVDunfold:
     def transform_system(self):
         """Rescale and rotate the system of equations"""
         n_bins_x = len(self.__x_ini[0])
-        print("cov: ", self.__covariance_matrix.shape)
         Q, r, _ = self.__perform_svd_on_covariance()
-        print("Q, r:", Q.shape, r.shape)
         b_transformed = self.__transform_b_measured(Q, r)
-        print("b_transformed:", b_transformed.shape)
         transformed_response = self.__transform_response_matrix(Q, r)
         self.__X_inv = self.__caclulate_inverse_covariance(
             transformed_response)
         U, self.__S, self.__VT = self.__perform_svd_on_transformed_system(
             transformed_response)
-        print("trans response: ", transformed_response.shape)
-        print("U, S, VT shapes: ", U.shape, self.__S.shape, self.__VT.shape)
         self.__d = self.__calculate_expansion_coefficients(U, b_transformed)
 
     def __perform_svd_on_covariance(self):
@@ -124,12 +118,7 @@ class SVDunfold:
     def __perform_svd_on_transformed_system(self, A_tilde):
         """Return the result of svd on the transformed system"""
         A_tilde_x_C_inv = A_tilde@self.__C_inv
-        #n_bins_b = len(self.__b_measured[0])
-        #n_bins_x = len(self.__x_ini[0])
-        #added_rows = np.zeros((n_bins_x-n_bins_b, n_bins_x))
-        #A_tilde_x_C_inv = np.vstack((A_tilde_x_C_inv, added_rows))
         U, S, VT = np.linalg.svd(A_tilde_x_C_inv, full_matrices=False)
-        #U = U[:,:len(self.__b_measured[0])]
         return U, S, VT
 
     def __calculate_expansion_coefficients(self, U, b_transformed):
