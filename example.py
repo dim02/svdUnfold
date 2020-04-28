@@ -118,5 +118,5 @@ class ExampleProblem:
         return bins, bin_centers
 
     def __add_smearing(self, x):
-        smear = np.random.normal(-2., 0.5)
+        smear = np.random.normal(-5., 2.5)
         return x + smear
