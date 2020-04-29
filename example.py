@@ -1,15 +1,14 @@
 import numpy as np
 from scipy import stats
 
-n_gen_cauchy = 100_000
-n_gen_norm = 50_000
-n_test_cauchy = 100_000
-n_test_norm = 50_000
-norm_gen_params = [10, 4]
-norm_test_params = [-8, 4]
-cauchy_gen_params = [ -10, 3]
-cauchy_test_params = [8, 3]
-
+n_gen_norm_1 = 1_000_000
+n_gen_norm_2 = 1_000_000
+n_test_norm_1 = 20_000
+n_test_norm_2 = 10_000
+norm_gen_params_1 = [-8, 5.5]
+norm_gen_params_2 = [5, 8.5]
+norm_test_params_1 = [-7.5, 6.5]
+norm_test_params_2 = [7, 5.5]
 
 
 class ExampleProblem:
@@ -58,19 +57,21 @@ class ExampleProblem:
         peak1_integral = self.__histogram_integral(self.__x_ini_1)
         peak2_integral = self.__histogram_integral(self.__x_ini_2)
         print(peak1_integral, peak2_integral)
-        return peak1_integral * stats.cauchy.pdf(x, cauchy_gen_params[0], cauchy_gen_params[1]) + peak2_integral * stats.norm.pdf(x, norm_gen_params[0], norm_gen_params[1])
+        return peak1_integral * stats.norm.pdf(x, norm_gen_params_2[0], norm_gen_params_2[1]) + peak2_integral * stats.norm.pdf(x, norm_gen_params_1[0], norm_gen_params_1[1])
 
     def test_distribution(self, x):
         peak1_integral = self.__histogram_integral(self.__x_test_1)
         peak2_integral = self.__histogram_integral(self.__x_test_2)
         print(peak1_integral, peak2_integral)
-        return peak1_integral * stats.norm.pdf(x, norm_test_params[0], norm_test_params[1]) + peak2_integral * stats.cauchy.pdf(x, cauchy_test_params[0], cauchy_test_params[1])
+        return peak1_integral * stats.norm.pdf(x, norm_test_params_1[0], norm_test_params_1[1]) + peak2_integral * stats.norm.pdf(x, norm_test_params_2[0], norm_test_params_2[1])
 
     def __generate_initial_MC_peak1(self):
-        self.__x_ini_1 = stats.cauchy.rvs(cauchy_gen_params[0], cauchy_gen_params[1], n_gen_cauchy)
+        self.__x_ini_1 = stats.norm.rvs(
+            norm_gen_params_2[0], norm_gen_params_2[1], n_gen_norm_2)
 
     def __generate_initial_MC_peak2(self):
-        self.__x_ini_2 = np.random.normal(norm_gen_params[0], norm_gen_params[1], n_gen_norm)
+        self.__x_ini_2 = stats.norm.rvs(
+            norm_gen_params_1[0], norm_gen_params_1[1], n_gen_norm_1)
 
     def __histogram_integral(self, gen_distr):
         hist = np.histogram(gen_distr, self.bins_x)
@@ -83,10 +84,12 @@ class ExampleProblem:
         self.__x_ini_gen = np.append(self.__x_ini_1, self.__x_ini_2)
 
     def __generate_test_distribution_peak1(self):
-        self.__x_test_1 = np.random.normal(norm_test_params[0], norm_test_params[1], n_test_norm)
+        self.__x_test_1 = stats.norm.rvs(
+            norm_test_params_1[0], norm_test_params_1[1], n_test_norm_1)
 
     def __generate_test_distribution_peak2(self):
-        self.__x_test_2 = stats.cauchy.rvs(cauchy_test_params[0], cauchy_test_params[1], n_test_cauchy)
+        self.__x_test_2 = stats.norm.rvs(
+            norm_test_params_2[0], norm_test_params_2[1], n_test_norm_2)
 
     def __generate_test_distribution(self):
         self.__generate_test_distribution_peak1()
@@ -118,5 +121,5 @@ class ExampleProblem:
         return bins, bin_centers
 
     def __add_smearing(self, x):
-        smear = np.random.normal(-5., 2.5)
+        smear = np.random.normal(-2., 0.2)
         return x + smear
