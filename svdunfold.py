@@ -37,6 +37,8 @@ class SVDunfold:
             "Wrong dimensions: bins in x_ini != columns in response matrix"
         assert helpers.check_symmetric(self.__covariance_matrix), \
             "Covariance matrix is not symmetric"
+        assert(n_bins_b > 1 and n_bins_x > 1),\
+            "Bins should be at least 2"
 
     def unfold(self, k):
         """Perform the unfolding with regularization parameter tau=s(k)^2"""
@@ -46,10 +48,12 @@ class SVDunfold:
         tau = self.__S[k]**2
         d_reg = self.__calculate_regularized_d(tau)
         V = self.__VT.T
-        w_solution = self.__calculate_transformed_system_solution(tau, d_reg, V)
+        w_solution = self.__calculate_transformed_system_solution(
+            tau, d_reg, V)
         W_covariance = self.__calculate_transformed_system_covariance(tau, V)
         self.__x_unfolded = self.__calculate_unfolded_distribution(w_solution)
-        self.__X_unfolded_covariance = self.__calculate_unfolded_distribution_covariance(W_covariance)
+        self.__X_unfolded_covariance = self.__calculate_unfolded_distribution_covariance(
+            W_covariance)
 
     def get_unfolded_distribution(self):
         """Return the unfolded distribution as a 1d array"""
@@ -118,7 +122,7 @@ class SVDunfold:
     def __perform_svd_on_transformed_system(self, A_tilde):
         """Return the result of svd on the transformed system"""
         A_tilde_x_C_inv = A_tilde@self.__C_inv
-        U, S, VT = np.linalg.svd(A_tilde_x_C_inv, full_matrices=False)
+        U, S, VT = np.linalg.svd(A_tilde_x_C_inv)
         return U, S, VT
 
     def __calculate_expansion_coefficients(self, U, b_transformed):
@@ -149,11 +153,11 @@ class SVDunfold:
 
     def __calculate_unfolded_distribution(self, w_solution):
         """Calculate the unfolded distribution x(tau)"""
-        self.__x_unfolded = w_solution * self.__x_ini[0]
-        return self.__x_unfolded
+        x_unfolded = w_solution * self.__x_ini[0]
+        return x_unfolded
 
     def __calculate_unfolded_distribution_covariance(self, W_covariance):
         """Calculate the covariance matrix X(tau) of the unfolded distribution"""
-        self.__X_unfolded_covariance = W_covariance * \
+        X_unfolded_covariance = W_covariance * \
             (np.outer(self.__x_ini[0], self.__x_ini[0]))
-        return self.__X_unfolded_covariance
+        return X_unfolded_covariance

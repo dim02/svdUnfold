@@ -393,3 +393,23 @@ def test_unfolded_covariance():
                            [20, 16, 24, 64, 100],
                            [30, 20, 75, 100, 150]])
     assert np.allclose(X_cov, X_cov_test)
+
+
+def test_x_ini_bins_at_least_two():
+    """Test exception when bins in x_ini are not at least two"""
+    x_ini = np.histogram(np.zeros(10), bins=1)
+    b = np.histogram(np.zeros(10), bins=3)
+    A = np.zeros((3, 1))
+    cov = np.zeros((3, 3))
+    with pytest.raises(AssertionError, match=r".*at least 2.*"):
+        unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
+
+
+def test_b_bins_at_least_two():
+    """Test exception when bins in b are not at least two"""
+    x_ini = np.histogram(np.zeros(10), bins=3)
+    b = np.histogram(np.zeros(10), bins=1)
+    A = np.zeros((1, 3))
+    cov = np.zeros((1, 1))
+    with pytest.raises(AssertionError, match=r".*at least 2.*"):
+        unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
