@@ -37,6 +37,8 @@ class SVDunfold:
             "Wrong dimensions: bins in x_ini != columns in response matrix"
         assert helpers.check_symmetric(self.__covariance_matrix), \
             "Covariance matrix is not symmetric"
+        assert(n_bins_b > 1 and n_bins_x > 1),\
+            "Bins should be at least 2"
 
     def unfold(self, k):
         """Perform the unfolding with regularization parameter tau=s(k)^2"""
@@ -46,10 +48,12 @@ class SVDunfold:
         tau = self.__S[k]**2
         d_reg = self.__calculate_regularized_d(tau)
         V = self.__VT.T
-        w_solution = self.__calculate_transformed_system_solution(tau, d_reg, V)
+        w_solution = self.__calculate_transformed_system_solution(
+            tau, d_reg, V)
         W_covariance = self.__calculate_transformed_system_covariance(tau, V)
         self.__x_unfolded = self.__calculate_unfolded_distribution(w_solution)
-        self.__X_unfolded_covariance = self.__calculate_unfolded_distribution_covariance(W_covariance)
+        self.__X_unfolded_covariance = self.__calculate_unfolded_distribution_covariance(
+            W_covariance)
 
     def get_unfolded_distribution(self):
         """Return the unfolded distribution as a 1d array"""
