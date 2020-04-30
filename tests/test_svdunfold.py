@@ -265,7 +265,7 @@ def test_expansion_coefficients():
     cov = np.array([[1.5, 0., 0.], [0., 1.5, 0.], [0., 0., 1.5]])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     unfold.transform_system()
-    d_test = np.log(np.abs(np.array([-7.0796561, 1.42501533, -1.78357341])))
+    d_test = np.abs(np.array([-7.0796561, 1.42501533, -1.78357341]))
     d = unfold.get_abs_d()
     assert np.allclose(d_test, d)
 
