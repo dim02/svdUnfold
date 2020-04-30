@@ -1,10 +1,11 @@
 import numpy as np
 from scipy import stats
+import random
 
 n_gen_norm_1 = 1_000_000
 n_gen_norm_2 = 1_000_000
-n_test_norm_1 = 20_000
-n_test_norm_2 = 10_000
+n_test_norm_1 = 100_000
+n_test_norm_2 = 50_000
 norm_gen_params_1 = [-8, 5.5]
 norm_gen_params_2 = [5, 8.5]
 norm_test_params_1 = [-7.5, 6.5]
@@ -56,13 +57,11 @@ class ExampleProblem:
     def true_distribution(self, x):
         peak1_integral = self.__histogram_integral(self.__x_ini_1)
         peak2_integral = self.__histogram_integral(self.__x_ini_2)
-        print(peak1_integral, peak2_integral)
         return peak1_integral * stats.norm.pdf(x, norm_gen_params_2[0], norm_gen_params_2[1]) + peak2_integral * stats.norm.pdf(x, norm_gen_params_1[0], norm_gen_params_1[1])
 
     def test_distribution(self, x):
         peak1_integral = self.__histogram_integral(self.__x_test_1)
         peak2_integral = self.__histogram_integral(self.__x_test_2)
-        print(peak1_integral, peak2_integral)
         return peak1_integral * stats.norm.pdf(x, norm_test_params_1[0], norm_test_params_1[1]) + peak2_integral * stats.norm.pdf(x, norm_test_params_2[0], norm_test_params_2[1])
 
     def __generate_initial_MC_peak1(self):
@@ -99,6 +98,7 @@ class ExampleProblem:
     def __generate_data(self, x):
         b_gen = []
         for i in x:
+            i =  self.__efficiency_cut(i)
             b_gen.append(self.__add_smearing(i))
         return b_gen
 
@@ -121,5 +121,12 @@ class ExampleProblem:
         return bins, bin_centers
 
     def __add_smearing(self, x):
-        smear = np.random.normal(-2., 0.2)
+        smear = np.random.normal(-2., 0.5)
         return x + smear
+
+    def __efficiency_cut(self, x):
+        eff = 0.2 + (1.0 - 0.2)/(self.bins_b[-1]-self.bins_b[0])*(x + self.bins_b[-1])
+        eff_x = random.random()
+        if eff_x > eff:
+            x = -999999
+        return x
