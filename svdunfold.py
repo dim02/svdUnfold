@@ -65,7 +65,7 @@ class SVDunfold:
 
     def get_abs_d(self):
         """Return a 1d array of the absolute value of the deconvolution coefficients d"""
-        return np.log(np.abs(self.__d))
+        return np.abs(self.__d)
 
     def get_singular_values(self):
         """Return an array of the singular values of the rescaled and rotated problem"""
