@@ -84,7 +84,7 @@ def test_svd_on_covariance_matrix():
     Q_test = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
     r_test = np.array([5., 4., 2.])
     QT_test = np.array([[0., 1., 0.], [0., 0., 1.], [1., 0., 0.]])
-    Q, r, QT = unfold._SVDunfold__perform_svd_on_covariance()
+    Q, r, QT = unfold._perform_svd_on_covariance()
     assert np.array_equal(Q, Q_test)
     assert np.array_equal(r, r_test)
     assert np.array_equal(QT, QT_test)
@@ -99,7 +99,7 @@ def test_transformed_b_measured_dimension():
     Q = np.zeros((4, 4))
     r = np.ones(4)
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    b_tilde = unfold._SVDunfold__transform_b_measured(Q, r)
+    b_tilde = unfold._transform_b_measured(Q, r)
     assert np.size(b_tilde) == 4
 
 
@@ -112,7 +112,7 @@ def test_transformed_measured_distribution():
     Q = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
     r = np.array([5., 4., 2.])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    b_tilde = unfold._SVDunfold__transform_b_measured(Q, r)
+    b_tilde = unfold._transform_b_measured(Q, r)
     assert np.array_equal(np.array([2. / 5., 2. / 4., 1. / 2.]), b_tilde)
 
 
@@ -125,7 +125,7 @@ def test_transformed_response_correct_dimensions():
     Q = np.zeros((7, 7))
     r = np.ones(7)
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    A_tilde = unfold._SVDunfold__transform_response_matrix(Q, r)
+    A_tilde = unfold._transform_response_matrix(Q, r)
     assert A_tilde.shape == (7, 3)
 
 
@@ -138,7 +138,7 @@ def test_transformed_response_correct_values():
     Q = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
     r = np.array([5., 4., 2.])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    A_tilde = unfold._SVDunfold__transform_response_matrix(Q, r)
+    A_tilde = unfold._transform_response_matrix(Q, r)
     assert np.array_equal(
         np.array([[0, 0, 2. / 5.], [2. / 4., 0, 0], [0, 1. / 2., 0]]), A_tilde)
 
@@ -151,7 +151,7 @@ def test_inverse_covariance_correct_dimensions():
     cov = np.eye(3)
     A_tilde = np.zeros((3, 5))
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
+    X_inv = unfold._caclulate_inverse_covariance(A_tilde)
     assert X_inv.shape == (5, 5)
 
 
@@ -163,7 +163,7 @@ def test_inverse_covariance_correct_values_3x3():
     cov = np.eye(3)
     A_tilde = np.array([[1, 0, 1], [0, 2, 2], [3, 1, 0]])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
+    X_inv = unfold._caclulate_inverse_covariance(A_tilde)
     assert np.array_equal(X_inv, np.array(
         [[10., 3. / 2, 1. / 3.], [3. / 2., 5. / 4., 2. / 3.], [1. / 3., 2. / 3., 5. / 9.]]))
 
@@ -177,7 +177,7 @@ def test_inverse_covariance_correct_values_3x5():
     cov = np.eye(3)
     A_tilde = np.array([[1, 0, 1, 4, 9], [0, 2, 2, 0, 5], [3, 1, 0, 1, 1]])
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    X_inv = unfold._SVDunfold__caclulate_inverse_covariance(A_tilde)
+    X_inv = unfold._caclulate_inverse_covariance(A_tilde)
     X_inv_test = np.array([[10., 3. / 2., 1. / 3., 7. / 4., 12. / 5.],
                            [3. / 2., 5. / 4., 2. / 3., 1. / 8., 11. / 10.],
                            [1. / 3., 2. / 3., 5. / 9., 1. / 3., 19. / 15.],
@@ -208,7 +208,7 @@ def test_svd_on_transformed_system():
                         [-0.35523906, -0.09660769, 0.82961209,
                          0.04126636, -0.41774758],
                         [-0.32429862, 0.54803796, 0.12645634, -0.68401197, 0.33259768]])
-    U, S, VT = unfold._SVDunfold__perform_svd_on_transformed_system(
+    U, S, VT = unfold._perform_svd_on_transformed_system(
         A_tilde)
     assert np.allclose(U, U_test)
     assert np.allclose(S, S_test)
@@ -224,7 +224,7 @@ def test_expansion_coefficients_dimension():
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     U = np.ones((3, 5))
     b_transformed = np.ones(3)
-    d = unfold._SVDunfold__calculate_expansion_coefficients(U, b_transformed)
+    d = unfold._calculate_expansion_coefficients(U, b_transformed)
     assert d.shape == (5,)
 
 
@@ -237,7 +237,7 @@ def test_expansion_coefficients_correct():
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     U = np.array([[1, 4, 8, 3, 6], [9, 5, 3, 0, 3], [3, 5, 4, 4, 8]])
     b_transformed = np.array([4, 5, 6])
-    d = unfold._SVDunfold__calculate_expansion_coefficients(U, b_transformed)
+    d = unfold._calculate_expansion_coefficients(U, b_transformed)
     d_test = np.array([67, 71, 71, 36, 87])
     assert np.allclose(d, d_test)
 
@@ -285,7 +285,7 @@ def test_transform_system_3x5():
                       [0., 0., 0.66666667, 0.33333333, 0.],
                       [0., 0., 0.33333333, 0.33333333, 0.33333333],
                       [0., 0., 0., 0.33333333, 0.66666667]])
-    assert np.allclose(unfold._SVDunfold__X_inv, X_inv)
+    assert np.allclose(unfold._X_inv, X_inv)
 
 
 def test_regularized_expansion_coefficients():
@@ -295,11 +295,11 @@ def test_regularized_expansion_coefficients():
     A = np.ones((3, 5))
     cov = np.eye(3)
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
-    unfold._SVDunfold__d = np.array([5, 4, 1, 0.1, 1])
-    unfold._SVDunfold__S = np.array([10, 3, 2, 1, 0.01])
+    unfold._d = np.array([5, 4, 1, 0.1, 1])
+    unfold._S = np.array([10, 3, 2, 1, 0.01])
     d_reg = np.array([4.80769231, 2.76923077, 0.5, 0.02, 2.49993750e-05])
     tau = 4
-    d_reg_test = unfold._SVDunfold__calculate_regularized_d(tau)
+    d_reg_test = unfold._calculate_regularized_d(tau)
     assert np.allclose(d_reg, d_reg_test)
 
 
@@ -327,9 +327,9 @@ def test_transformed_system_solution():
                   [-0.44606964, -0.33232921, -0.47011051, 0.04126636, -0.68401197],
                   [-0.44607244, -0.62878209, 0.34715732, -0.41774758, 0.33259768]])
     d = np.array([5, 4, 1, 0.1, 1])
-    unfold._SVDunfold__S = np.array([10, 3, 2, 1, 0.01])
+    unfold._S = np.array([10, 3, 2, 1, 0.01])
     tau = 4
-    w = unfold._SVDunfold__calculate_transformed_system_solution(tau, d, V)
+    w = unfold._calculate_transformed_system_solution(tau, d, V)
     w_test = np.array([-23.13863676, -22.45199401,
                        -21.60395838, -20.65671022, -20.14252922])
     assert np.allclose(w, w_test)
@@ -347,9 +347,9 @@ def test_transformed_system_covariance():
                   [-0.44678007, 0.00384851, 0.31004087, 0.82961209, 0.12645634],
                   [-0.44606964, -0.33232921, -0.47011051, 0.04126636, -0.68401197],
                   [-0.44607244, -0.62878209, 0.34715732, -0.41774758, 0.33259768]])
-    unfold._SVDunfold__S = np.array([10, 3, 2, 1, 0.01])
+    unfold._S = np.array([10, 3, 2, 1, 0.01])
     tau = 4
-    W_cov = unfold._SVDunfold__calculate_transformed_system_covariance(tau, V)
+    W_cov = unfold._calculate_transformed_system_covariance(tau, V)
     W_cov_t = np.array([[18.65430, 18.58575, 18.49273, 18.40675, 18.35836],
                         [18.58575, 18.55553, 18.49723, 18.44252, 18.40052],
                         [18.49273, 18.49723, 18.50056, 18.48892, 18.47695],
@@ -367,7 +367,7 @@ def test_unfolded_distribution():
     cov = np.zeros((3, 3))
     unfold = svdunfold.SVDunfold(x_ini, b, A, cov)
     w_solution = np.array([2, 1, 5, 6, 3])
-    x = unfold._SVDunfold__calculate_unfolded_distribution(w_solution)
+    x = unfold._calculate_unfolded_distribution(w_solution)
     x_test = np.array([2, 2, 15, 24, 15])
     assert np.allclose(x, x_test)
 
@@ -385,7 +385,7 @@ def test_unfolded_covariance():
                         [9, 3, 6, 2, 5],
                         [5, 2, 2, 4, 5],
                         [6, 2, 5, 5, 6]])
-    X_cov = unfold._SVDunfold__calculate_unfolded_distribution_covariance(
+    X_cov = unfold._calculate_unfolded_distribution_covariance(
         W_covar)
     X_cov_test = np.array([[6, 10, 12, 16, 15],
                            [10, 20, 24, 32, 40],
